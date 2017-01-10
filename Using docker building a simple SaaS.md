@@ -48,3 +48,36 @@ app.listen(8080, () => {
 ```
 
 现在，在项目根目录里启动命令行，输入 `npm start` 命令；在浏览器中输入 `localhost:8080`，如果能看到 "Hello, Docker"，那么就说明这个用 Node 写的服务器已经可以使用了。
+
+## 利用 Docker 创建应用镜像
+
+在将我们的应用放入 Docker 容器之前，我们首先需要为我们的应用创建一个 Docker 镜像。
+
+**创建 Dockerfile**
+
+在项目的根目录下面创建一个名为 `Dockerfile` 的空文件，注意没有任何后缀。习惯上，我们还需要创建一个 `.dockerignore` 文件，但这里就不需要了。
+
+下面就是 `Dockerfile` 内需要写的内容，每一行的命令都以注释的形式标注了出来。值得提一下的是，根据我的学习经验，在跟着教程做 Demo 时，中间不懂的不需要太纠结，“硬着头皮”做下去，做到最后，看到了结果之后就能对整个过程有了一个高屋建瓴的认识，那个时候，回过头来慢慢抠细节将变得很高效。好吧，其实我是想说，下面的 `Dockerfile` 文件中，你不一定看得懂每一行注释，但跟着做下去，回过头来看肯定有不一样的认识。
+
+```Dockerfile
+# 定义我们这个镜像文件的父镜像，因为我们的应用是个用 Node 写的 web 应用，所以这里的父镜像是 node，具体讲是 node 的长期维护的版本：boron
+# 还需要注意的是，Dockerfile 中的所有命令都是大写的
+FROM node:boron
+
+# 为应用在镜像中创建一个工作目录
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# 将应用中的 package.json 拷到工作目录中，并且在工作目录中执行 "npm install" 命令
+COPY package.json /usr/src/app/
+RUN npm install
+
+# 将应用中的代码等文件全部拷到工作目录中
+COPY . /usr/src/app
+
+# 因为应用监听的是 8080 端口，所以在镜像中也需要绑定 8080 端口
+EXPOSE 8080
+
+# 至此，我们还需要在镜像中启动应用，这里只需要调用 "npm start" 命令即可启动应用
+CMD [ "npm", "start" ]
+```
