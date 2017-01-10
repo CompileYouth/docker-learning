@@ -26,7 +26,6 @@ app.get('/', (req, res) => {
 app.listen(8080, () => {
     console.log(`The server is running at 8080...`);
 })
-
 ```
 
 然后在 `package.json` 中的 script 属性中添加 `"start": node server.js`。至此，`package.json` 文件里的内容为：
