@@ -138,7 +138,7 @@ Docker 自动为容器创建了一个容器名字，一般是”形容词_名字
 docker run -p 8081:8080 -d --name myapp compileyouth/node-app
 ```
 
-至此，你用 Node 完成的 Web 应用已经作为一个服务已经可以上线使用了。
+至此，你用 Node 完成的 Web 应用已经作为一个服务已经可以上线使用了，你可以在浏览器中输入 `localhost:8081` 来查看。
 
 **SaaS 模拟**
 
@@ -178,3 +178,5 @@ docker stop a-app
 ```
 
 这时如果你再尝试打开 `localhost:8081` 的话会发现网页已经彻底打不开了。
+
+又过了几天，发现 A 续费了，所以执行 `docker restart a-app` 来重启他的服务。
