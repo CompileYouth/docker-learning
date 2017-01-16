@@ -180,3 +180,44 @@ docker stop a-app
 这时如果你再尝试打开 `localhost:8081` 的话会发现网页已经彻底打不开了。
 
 又过了几天，发现 A 续费了，所以执行 `docker restart a-app` 来重启他的服务。
+
+**订购 Mongodb**
+
+没过几天，A 发现自己的业务需要数据库的支撑，所以又订购了 mongodb 的服务。所以我们需要启动一个 mongo 的实例(前提是已经安装了 mongodb 的镜像)：
+
+```
+docker run --name A-mongo -d mongo
+```
+
+执行 `docker ps` 得到：
+
+```
+CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                    NAMES
+e745ef83b8ec        mongo                   "/entrypoint.sh mongo"   2 hours ago         Up 12 seconds       27017/tcp                A-mongo
+6170679cc043        compileyouth/node-app   "npm start"              5 days ago          Up 5 days           0.0.0.0:8082->8080/tcp   b-app
+5464e6893423        compileyouth/node-app   "npm start"              5 days ago          Up 4 days           0.0.0.0:8081->8080/tcp   a-app
+```
+
+这时仅仅是运行了一个 mongodb 的实例，跟 A 运行的 Web 服务还没有任何联系，下面就需要为两者建立联系。这建立联系之前还需要做一件事：删除 A 客户原来的 Web 应用实例。
+
+```
+docker rm -f a-app
+```
+
+`-f` 中 `f` 的含义是 `force`，代表强制删除一个实例。如果实例正在运行，那么 `docker rm a-app` 是无法删除这个实例的，而用 `-f` 便可以了。
+
+下面就开始为 mongo 与 node 网页应用建立联系：
+
+```
+docker run --name a-app -d -e "COMPANY_NAME=A_COMPANY" -p 8081:8080 --link A-mongo:mongo compileyouth/node-app
+```
+
+这是再用 `docker ps` 看看有几个实例。
+
+现在再输入下面的命令看看链接在 a-app 上的 mongo：
+
+```
+docker inspect -f "{{ .HostConfig.Links }}" a-app
+```
+
+到这里，例子就举完了，希望大家能对 Docker 有个简单的了解。
